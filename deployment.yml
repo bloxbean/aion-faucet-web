@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aion-faucet-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: aion-faucet-web
+  template:
+    metadata:
+      labels:
+        name: aion-faucet-web
+    spec:
+      containers:
+        - name: application
+          image: bloxbean/aion-faucet-web
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+          - name: operator_key
+            valueFrom:
+              secretKeyRef:
+                name: aion-security
+                key: operator.key
+          - name: node_url
+            valueFrom:
+              secretKeyRef:
+                name: aion-security
+                key: node.url
