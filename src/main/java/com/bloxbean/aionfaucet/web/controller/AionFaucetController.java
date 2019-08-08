@@ -1,5 +1,6 @@
 package com.bloxbean.aionfaucet.web.controller;
 
+import avm.Address;
 import com.bloxbean.aionfaucet.web.exception.AlreadyUsedException;
 import com.bloxbean.aionfaucet.web.exception.InvalidMessageException;
 import com.bloxbean.aionfaucet.web.model.Challenge;
@@ -8,6 +9,7 @@ import com.bloxbean.aionfaucet.web.service.RedisService;
 import com.bloxbean.aionfaucet.web.util.ConfigHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.aion4j.avm.helper.api.Log;
+import org.aion4j.avm.helper.local.LocalAvmNode;
 import org.aion4j.avm.helper.remote.RemoteAVMNode;
 import org.aion4j.avm.helper.util.HexUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import java.security.NoSuchAlgorithmException;
 @RestController
 @Slf4j
 public class AionFaucetController {
+
+    private String FAUCET_CONTRACT_ADDRESS = "0xa0089bdb72c1472e1b109a48efa4ae640a9d2667eb5ae69221bf18984f8a90a2";
 
     private BigInteger MIN_AMNT_TO_TRANSFER = new BigInteger("100000000000000000"); //0.1 Aion
     private long defaultGas = 2000000;
@@ -66,8 +70,8 @@ public class AionFaucetController {
         return redisService.getChallenge();
     }
 
-    @PostMapping(value = "/topup", consumes = "text/plain")
-    public TopupResult topUp(@RequestBody String hashcash) {
+    @PostMapping(value = "/register", consumes = "text/plain")
+    public TopupResult register(@RequestBody String hashcash) {
         String operatorKey = ConfigHelper.getOperatorKey(ConfigHelper.MASTERY_NETWORK);
         String nodeUrl = ConfigHelper.getNodeUrl(ConfigHelper.MASTERY_NETWORK);
 
@@ -100,7 +104,11 @@ public class AionFaucetController {
 
         RemoteAVMNode remoteAVMNode = new RemoteAVMNode(nodeUrl, log);
         try {
-            String txHash = remoteAVMNode.sendRawTransaction(account, operatorKey, "", MIN_AMNT_TO_TRANSFER, defaultGas, defaultGasPrice);
+
+            String encodedMethodCall = LocalAvmNode.encodeMethodCall("registerAddress", new Object[]{new Address(HexUtil.hexStringToBytes(account)), MIN_AMNT_TO_TRANSFER});
+            log.info("Encoded method call data: " + encodedMethodCall);
+
+            String txHash = remoteAVMNode.sendRawTransaction(FAUCET_CONTRACT_ADDRESS, operatorKey, encodedMethodCall, BigInteger.ZERO, defaultGas, defaultGasPrice);
 
             if (txHash != null) {
                 return TopupResult.builder().txHash(txHash).build();

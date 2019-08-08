@@ -45,6 +45,13 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.aion</groupId>
+            <artifactId>avm-api</artifactId>
+            <version>0.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/avm.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
