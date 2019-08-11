@@ -14,7 +14,7 @@ public class RedisService {
 
     private final static long HASHCASH_USED_MESSAGE_EXPIRY = 60;
     private final static long CHALLENGE_TIMEOUT = 120;
-    private final static int defaultChallengeValue = 25;
+    private final static int defaultChallengeValue = 24;
 
     private final static String HASHCASH_KEY = "hashcash_key";
     private final static String CHALLEGE_VALUE_KEY = "current_challenge_value";

@@ -25,9 +25,9 @@ import java.security.NoSuchAlgorithmException;
 @Slf4j
 public class AionFaucetController {
 
-    private String FAUCET_CONTRACT_ADDRESS = "0xa0089bdb72c1472e1b109a48efa4ae640a9d2667eb5ae69221bf18984f8a90a2";
+    private String FAUCET_CONTRACT_ADDRESS = "0xa066c76fe438a33e26b9b1f33f994694e079764e56503c3b71337449f0e72a21";
 
-    private BigInteger MIN_AMNT_TO_TRANSFER = new BigInteger("100000000000000000"); //0.1 Aion
+    private BigInteger MIN_AMNT_TO_TRANSFER = new BigInteger("500000000000000000"); //0.5 Aion
     private long defaultGas = 2000000;
     private long defaultGasPrice = 100000000000L;
 

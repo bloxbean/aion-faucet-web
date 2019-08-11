@@ -30,3 +30,18 @@ spec:
               secretKeyRef:
                 name: aion-security
                 key: node.url
+          - name: redis_host
+            valueFrom:
+              secretKeyRef:
+                name: redis-security
+                key: redis.host
+          - name: redis_port
+            valueFrom:
+              secretKeyRef:
+                name: redis-security
+                key: redis.port
+          - name: redis_password
+            valueFrom:
+              secretKeyRef:
+                name: redis-security
+                key: redis.password

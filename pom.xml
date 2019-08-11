@@ -18,6 +18,7 @@
         <maven.compiler.source>10</maven.compiler.source>
         <maven.compiler.target>10</maven.compiler.target>
         <docker.image.prefix>bloxbean</docker.image.prefix>
+        <avm.version>faucet-avm-1.4.1</avm.version>
     </properties>
 
     <dependencies>
@@ -46,10 +47,8 @@
         </dependency>
         <dependency>
             <groupId>org.aion</groupId>
-            <artifactId>avm-api</artifactId>
-            <version>0.0.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/avm.jar</systemPath>
+            <artifactId>avm</artifactId>
+            <version>${avm.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -71,6 +70,26 @@
                 <configuration>
                     <repository>${docker.image.prefix}/${project.artifactId}</repository>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <groupId>org.aion</groupId>
+                            <artifactId>avm</artifactId>
+                            <version>${avm.version}</version>
+                            <packaging>jar</packaging>
+                            <file>${project.basedir}/lib/avm.jar</file>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
