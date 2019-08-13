@@ -3,10 +3,15 @@ package com.bloxbean.aionfaucet.web.service;
 import com.bloxbean.aionfaucet.web.model.Challenge;
 import com.nettgryppa.security.HashCash;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -48,15 +53,12 @@ public class RedisService {
         }
     }
 
-    public Challenge getChallenge() {
+    public Challenge getChallenge(String clientIp) {
         ValueOperations<String, Integer> valueOperation = redisTemplate.opsForValue();
 
-        Integer currentChallengeValue = valueOperation.get(CHALLEGE_VALUE_KEY);
-        if(currentChallengeValue == null)
-            currentChallengeValue = defaultChallengeValue;
-
-        if(currentChallengeValue < defaultChallengeValue) {
-            currentChallengeValue = defaultChallengeValue;
+        Integer currentChallengeValue = defaultChallengeValue;
+        if(!StringUtils.isEmpty(clientIp)) {
+            currentChallengeValue = getChallengeFromRateLimit(clientIp);
         }
 
         Long challengeCounter = nextChallengeNo();
@@ -69,6 +71,44 @@ public class RedisService {
                 .build();
 
         challengeOperation.set(CHALLENGE_COUNTER_PREFIX + challengeCounter, challenge, CHALLENGE_TIMEOUT, TimeUnit.SECONDS);
+
+        return challenge;
+    }
+
+    private int getChallengeFromRateLimit(String clientIp) {
+
+        String key = clientIp + ":rightnow";
+        Object valueObj = redisTemplate.opsForValue().get(key);
+
+        int challenge = defaultChallengeValue;
+        if (valueObj != null) {
+
+            int value = 0;
+            try {
+                value = Integer.parseInt(String.valueOf(valueObj));
+            } catch (Exception e) {
+
+            }
+
+            int reminder = (int) value / 3; //Every 3 requests within a hour will increase difficulty
+            challenge = challenge + reminder;
+
+            //Update
+            redisTemplate.opsForValue().increment(key);
+
+        } else { //value null,set the key
+
+            //execute a transaction
+            Object txResults = redisTemplate.execute(new SessionCallback<List<Object>>() {
+                public List<Object> execute(RedisOperations operations) throws DataAccessException {
+                    operations.multi();
+                    operations.opsForValue().increment(key);
+                    operations.expire(key, 1, TimeUnit.HOURS);
+
+                    return operations.exec();
+                }
+            });
+        }
 
         return challenge;
     }

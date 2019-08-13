@@ -7,6 +7,7 @@ import com.bloxbean.aionfaucet.web.model.Challenge;
 import com.bloxbean.aionfaucet.web.service.HashCashService;
 import com.bloxbean.aionfaucet.web.service.RedisService;
 import com.bloxbean.aionfaucet.web.util.ConfigHelper;
+import com.bloxbean.aionfaucet.web.util.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aion4j.avm.helper.api.Log;
 import org.aion4j.avm.helper.local.LocalAvmNode;
@@ -55,7 +56,12 @@ public class AionFaucetController {
     }
 
     @RequestMapping("challenge")
-    public Challenge getChallenge() {
+    public Challenge getChallenge(HttpServletRequest request) {
+        String clientIp = RequestUtil.getClientIpAddress(request);
+
+        if(log.isDebugEnabled())
+            log.debug("Client IP >> " + clientIp);
+
         String nodeUrl = ConfigHelper.getNodeUrl(ConfigHelper.MASTERY_NETWORK);
 
         if(StringUtils.isEmpty(nodeUrl)) {
@@ -67,7 +73,7 @@ public class AionFaucetController {
         RemoteAVMNode remoteAVMNode = new RemoteAVMNode(nodeUrl, log);
         String latestBlock = remoteAVMNode.getLatestBlock();
 
-        return redisService.getChallenge();
+        return redisService.getChallenge(clientIp);
     }
 
     @PostMapping(value = "/register", consumes = "text/plain")
