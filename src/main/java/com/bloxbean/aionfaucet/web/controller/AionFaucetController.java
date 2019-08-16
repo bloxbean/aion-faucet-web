@@ -14,6 +14,9 @@ import org.aion4j.avm.helper.local.LocalAvmNode;
 import org.aion4j.avm.helper.remote.RemoteAVMNode;
 import org.aion4j.avm.helper.util.HexUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +44,12 @@ public class AionFaucetController {
     @Autowired
     private HttpServletRequest request;
 
-    @RequestMapping("/")
+    @GetMapping(value = "/hello")
+    public ResponseEntity<String> hello(HttpServletRequest request) {
+        return new ResponseEntity<>("Hello Faucet: " + RequestUtil.getClientIpAddress(request), HttpStatus.OK);
+    }
+
+    @GetMapping(value="/", produces = MediaType.TEXT_PLAIN_VALUE)
     public String home() throws NoSuchAlgorithmException {
 
         String operatorKey = ConfigHelper.getOperatorKey(ConfigHelper.MASTERY_NETWORK);

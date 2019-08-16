@@ -34,7 +34,7 @@ public class RedisService {
     }
 
     public Long nextChallengeNo() {
-        return redisTemplate.opsForValue().increment("challenge_counter");
+        return redisTemplate.opsForValue().increment("challenge_counter", 1);
     }
 
     public void addHashCash(HashCash hashCash) {
@@ -77,6 +77,8 @@ public class RedisService {
 
     private int getChallengeFromRateLimit(String clientIp) {
 
+       // if(true) return defaultChallengeValue; //TODO for now till proxy protocol issue is fixed
+
         String key = clientIp + ":rightnow";
         Object valueObj = redisTemplate.opsForValue().get(key);
 
@@ -94,7 +96,7 @@ public class RedisService {
             challenge = challenge + reminder;
 
             //Update
-            redisTemplate.opsForValue().increment(key);
+            redisTemplate.opsForValue().increment(key, 1);
 
         } else { //value null,set the key
 
@@ -102,7 +104,7 @@ public class RedisService {
             Object txResults = redisTemplate.execute(new SessionCallback<List<Object>>() {
                 public List<Object> execute(RedisOperations operations) throws DataAccessException {
                     operations.multi();
-                    operations.opsForValue().increment(key);
+                    operations.opsForValue().increment(key, 1);
                     operations.expire(key, 1, TimeUnit.HOURS);
 
                     return operations.exec();
