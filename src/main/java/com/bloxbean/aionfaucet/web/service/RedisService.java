@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisService {
 
     private final static long HASHCASH_USED_MESSAGE_EXPIRY = 60;
-    private final static long CHALLENGE_TIMEOUT = 120;
+    private final static long CHALLENGE_TIMEOUT = 240;
     private final static int defaultChallengeValue = 24;
 
     private final static String HASHCASH_KEY = "hashcash_key";
