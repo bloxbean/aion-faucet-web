@@ -93,7 +93,7 @@ public class RedisService {
             }
 
             int reminder = (int) value / 3; //Every 3 requests within a hour will increase difficulty
-            challenge = challenge + reminder;
+            challenge = challenge + (reminder * 2);
 
             //Update
             redisTemplate.opsForValue().increment(key, 1);
