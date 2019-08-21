@@ -29,9 +29,11 @@ import java.security.NoSuchAlgorithmException;
 @Slf4j
 public class AionFaucetController {
 
-    private String FAUCET_CONTRACT_ADDRESS = "0xa023be19f1f21acca3a35786f11f2c0cbd976e4fb8bbbb985f3a78f35b1da6d3";
+    private final static String VERSION = "0.0.2";
 
-    private BigInteger MIN_AMNT_TO_TRANSFER = new BigInteger("500000000000000000"); //0.5 Aion
+    private final String FAUCET_CONTRACT_ADDRESS = "0xa055dc67cd05d013a0b7c064708a0eb86e31c5edbaf00bca645665217779d9f2";
+
+    //private BigInteger MIN_AMNT_TO_TRANSFER = new BigInteger("500000000000000000"); //0.5 Aion
     private long defaultGas = 2000000;
     private long defaultGasPrice = 100000000000L;
 
@@ -46,7 +48,7 @@ public class AionFaucetController {
 
     @GetMapping(value = "/hello")
     public ResponseEntity<String> hello(HttpServletRequest request) {
-        return new ResponseEntity<>("Hello Faucet: " + RequestUtil.getClientIpAddress(request), HttpStatus.OK);
+        return new ResponseEntity<>("Hello Faucet: " + RequestUtil.getClientIpAddress(request) + " v" + VERSION, HttpStatus.OK);
     }
 
     @GetMapping(value="/", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -119,7 +121,7 @@ public class AionFaucetController {
         RemoteAVMNode remoteAVMNode = new RemoteAVMNode(nodeUrl, log);
         try {
 
-            String encodedMethodCall = LocalAvmNode.encodeMethodCall("registerAddress", new Object[]{new Address(HexUtil.hexStringToBytes(account)), MIN_AMNT_TO_TRANSFER});
+            String encodedMethodCall = LocalAvmNode.encodeMethodCall("registerAddress", new Object[]{new Address(HexUtil.hexStringToBytes(account))});
             log.info("Encoded method call data: " + encodedMethodCall);
 
             String txHash = remoteAVMNode.sendRawTransaction(FAUCET_CONTRACT_ADDRESS, operatorKey, encodedMethodCall, BigInteger.ZERO, defaultGas, defaultGasPrice);
