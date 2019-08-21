@@ -29,7 +29,7 @@ import java.security.NoSuchAlgorithmException;
 @Slf4j
 public class AionFaucetController {
 
-    private final static String VERSION = "0.0.2";
+    private final static String VERSION = "0.0.2.1";
 
     private final String FAUCET_CONTRACT_ADDRESS = "0xa055dc67cd05d013a0b7c064708a0eb86e31c5edbaf00bca645665217779d9f2";
 
