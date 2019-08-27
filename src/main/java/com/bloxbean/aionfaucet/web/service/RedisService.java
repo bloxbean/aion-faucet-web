@@ -21,6 +21,8 @@ public class RedisService {
     private final static long CHALLENGE_TIMEOUT = 240;
     private final static int defaultChallengeValue = 24;
 
+    private final static int MAX_CHALLENGE_VALUE = 27; //Maximum challenge value. After that no challenge will be generated.
+
     private final static String HASHCASH_KEY = "hashcash_key";
     private final static String CHALLEGE_VALUE_KEY = "current_challenge_value";
     private final static String CHALLENGE_COUNTER_PREFIX = "CC:";
@@ -59,6 +61,14 @@ public class RedisService {
         Integer currentChallengeValue = defaultChallengeValue;
         if(!StringUtils.isEmpty(clientIp)) {
             currentChallengeValue = getChallengeFromRateLimit(clientIp);
+        }
+
+        if(currentChallengeValue > MAX_CHALLENGE_VALUE) { //Too many requests from this ip. Don't generate any challenge..probably an attacker.
+            return Challenge.builder()
+                    .value(Integer.MAX_VALUE)
+                    .message("Too many requests from this ip")
+                    .counter(Integer.MAX_VALUE)
+                    .build();
         }
 
         Long challengeCounter = nextChallengeNo();
