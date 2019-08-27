@@ -21,7 +21,7 @@ public class RedisService {
     private final static long CHALLENGE_TIMEOUT = 240;
     private final static int defaultChallengeValue = 24;
 
-    private final static int MAX_CHALLENGE_VALUE = 27; //Maximum challenge value. After that no challenge will be generated.
+    private final static int MAX_CHALLENGE_VALUE = 45; //Maximum challenge value. After that no challenge will be generated.
 
     private final static String HASHCASH_KEY = "hashcash_key";
     private final static String CHALLEGE_VALUE_KEY = "current_challenge_value";
