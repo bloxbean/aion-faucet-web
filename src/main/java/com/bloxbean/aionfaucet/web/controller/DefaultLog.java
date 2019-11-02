@@ -16,6 +16,16 @@ public class DefaultLog implements Log {
     }
 
     @Override
+    public void error(String s) {
+        log.error(s);
+    }
+
+    @Override
+    public void warn(String s) {
+        log.warn(s);
+    }
+
+    @Override
     public void info(String s, Throwable throwable) {
         log.info(s, throwable);
     }
@@ -28,6 +38,11 @@ public class DefaultLog implements Log {
     @Override
     public void error(String s, Throwable throwable) {
         log.error(s, throwable);
+    }
+
+    @Override
+    public void warn(String s, Throwable throwable) {
+        log.warn(s, throwable);
     }
 
     @Override

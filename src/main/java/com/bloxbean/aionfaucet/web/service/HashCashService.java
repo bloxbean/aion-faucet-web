@@ -4,22 +4,24 @@ import com.bloxbean.aionfaucet.web.exception.AlreadyUsedException;
 import com.bloxbean.aionfaucet.web.exception.InvalidMessageException;
 import com.bloxbean.aionfaucet.web.model.Challenge;
 import com.nettgryppa.security.HashCash;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Service
 public class HashCashService {
+    private static final Logger logger = LoggerFactory.getLogger(HashCash.class);
 
     @Autowired
     private RedisService redisService;
 
-    public String validate(String hashCashStr) throws AlreadyUsedException, NoSuchAlgorithmException, InvalidMessageException {
+    public Extension validate(String hashCashStr) throws AlreadyUsedException, NoSuchAlgorithmException, InvalidMessageException {
         Object hashCashOj = redisService.getHashCash(hashCashStr);
 
         if(hashCashOj != null)
@@ -34,12 +36,23 @@ public class HashCashService {
         String message = hashCash.getResource();
         Long counter =  null;
         String account = null;
+        String network = null;
 
         List<String> list = hashCash.getExtensions().get("data");
 
         if(list != null && list.size() >= 2 ) {
             counter = Long.parseLong(list.get(0));
             account = list.get(1);
+
+            if(logger.isDebugEnabled())
+                logger.debug("Extension size >>> " + list.size());
+
+            if(list.size() >=3) { //Only sent after Amity network support
+                network = list.get(2);
+            }
+
+            if(logger.isDebugEnabled())
+                logger.debug("Network > " + network);
         }
 
         if(counter ==  null || counter == 0)
@@ -52,15 +65,31 @@ public class HashCashService {
 
         if(challengeInRedis == null) {
             System.out.println("Challenge not found for counter >> " + counter);
-            return account;
+            return new Extension(network, account);
         }
 
         if(!challengeInRedis.getMessage().equals(message) || challengeInRedis.getValue() != value) {
             System.out.println("Tempered message");
             return null;
         } else {
-            return account;
+            return new Extension(network, account);
+        }
+    }
+
+    public static class Extension {
+        private String network;
+        private String account;
+        public Extension(String network, String account) {
+            this.network = network;
+            this.account = account;
         }
 
+        public String getNetwork() {
+            return network;
+        }
+
+        public String getAccount() {
+            return account;
+        }
     }
 }

@@ -5,10 +5,8 @@ import com.nettgryppa.security.HashCash;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SessionCallback;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -127,6 +125,21 @@ public class RedisService {
 
     public Challenge getChallengeForCounter(long counter) {
         return challengeOperation.get(CHALLENGE_COUNTER_PREFIX + counter);
+    }
+
+    public String ping() {
+        Object result = redisTemplate.execute(new RedisCallback<String>() {
+            @Override
+            public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
+                return redisConnection.ping();
+            }
+        });
+
+        if(result != null)
+            return result.toString();
+        else
+            return "ERROR";
+
     }
 
 }
