@@ -43,4 +43,4 @@ spec:
           - name: redis_host
             value: "redis-master"
           - name: redis_port
-            value: 6379
+            value: "6379"
