@@ -15,33 +15,32 @@ spec:
     spec:
       containers:
         - name: application
-          image: bloxbean/aion-faucet-web:0.0.3
+          image: bloxbean/aion-faucet-web:0.0.4
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
-          - name: operator_key
+          - name: mastery_operator_key
             valueFrom:
               secretKeyRef:
                 name: aion-security
-                key: operator.key
-          - name: node_url
+                key: mastery.operator.key
+          - name: mastery_node_url
             valueFrom:
               secretKeyRef:
                 name: aion-security
-                key: node.url
+                key: mastery.node.url
+          - name: amity_operator_key
+            valueFrom:
+              secretKeyRef:
+                name: aion-security
+                key: amity.operator.key
+          - name: amity_node_url
+            valueFrom:
+              secretKeyRef:
+                name: aion-security
+                key: amity.node.url
           - name: redis_host
-            valueFrom:
-              secretKeyRef:
-                name: redis-security
-                key: redis.host
+            value: "redis-master"
           - name: redis_port
-            valueFrom:
-              secretKeyRef:
-                name: redis-security
-                key: redis.port
-          - name: redis_password
-            valueFrom:
-              secretKeyRef:
-                name: redis-security
-                key: redis.password
+            value: 6379
