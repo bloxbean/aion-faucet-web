@@ -32,7 +32,7 @@ import java.util.List;
 @Slf4j
 public class AionFaucetController {
 
-    private final static String VERSION = "0.0.4";
+    private final static String VERSION = "0.0.5";
 
     private long defaultGas = 2000000;
     private long defaultGasPrice = 100000000000L;
