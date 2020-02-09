@@ -29,10 +29,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Slf4j
 public class AionFaucetController {
 
-    private final static String VERSION = "0.0.5";
+    private final static String VERSION = "0.0.6";
 
     private long defaultGas = 2000000;
     private long defaultGasPrice = 100000000000L;
