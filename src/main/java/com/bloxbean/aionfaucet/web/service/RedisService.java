@@ -17,8 +17,8 @@ public class RedisService {
 
     private final static long HASHCASH_USED_MESSAGE_EXPIRY = 60;
     private final static long CHALLENGE_TIMEOUT = 240;
+    private final static int defaultWebChallengeValue = 4; //For request from web
     private final static int defaultChallengeValue = 24;
-
     private final static int MAX_CHALLENGE_VALUE = 45; //Maximum challenge value. After that no challenge will be generated.
 
     private final static String HASHCASH_KEY = "hashcash_key";
@@ -53,12 +53,18 @@ public class RedisService {
         }
     }
 
-    public Challenge getChallenge(String clientIp) {
+    public Challenge getChallenge(String clientIp, boolean requestFromWeb) {
         ValueOperations<String, Integer> valueOperation = redisTemplate.opsForValue();
 
-        Integer currentChallengeValue = defaultChallengeValue;
+        Integer currentChallengeValue = null;
+        if(requestFromWeb) {
+            currentChallengeValue = defaultWebChallengeValue;
+        } else {
+            currentChallengeValue = defaultChallengeValue;
+        }
+
         if(!StringUtils.isEmpty(clientIp)) {
-            currentChallengeValue = getChallengeFromRateLimit(clientIp);
+            currentChallengeValue = getChallengeFromRateLimit(clientIp, requestFromWeb);
         }
 
         if(currentChallengeValue > MAX_CHALLENGE_VALUE) { //Too many requests from this ip. Don't generate any challenge..probably an attacker.
@@ -83,14 +89,14 @@ public class RedisService {
         return challenge;
     }
 
-    private int getChallengeFromRateLimit(String clientIp) {
-
-       // if(true) return defaultChallengeValue; //TODO for now till proxy protocol issue is fixed
-
+    private int getChallengeFromRateLimit(String clientIp, boolean requestFromWeb) {
         String key = clientIp + ":rightnow";
         Object valueObj = redisTemplate.opsForValue().get(key);
 
         int challenge = defaultChallengeValue;
+        if(requestFromWeb)
+            challenge = defaultWebChallengeValue;
+
         if (valueObj != null) {
 
             int value = 0;

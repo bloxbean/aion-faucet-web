@@ -29,7 +29,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Slf4j
 public class AionFaucetController {
 
@@ -90,25 +89,24 @@ public class AionFaucetController {
     @RequestMapping("challenge")
     public Challenge getChallenge(HttpServletRequest request) {
         String clientIp = RequestUtil.getClientIpAddress(request);
-
         if(log.isDebugEnabled())
             log.debug("Client IP >> " + clientIp);
 
-        String nodeUrl = ConfigHelper.getNodeUrl(ConfigHelper.MASTERY_NETWORK);
-
-        if(StringUtils.isEmpty(nodeUrl)) {
-            return null;
+        String origin = request.getHeader("Origin");
+        if(StringUtils.isEmpty(origin)) {
+            origin = request.getHeader("Referer");
         }
 
-//        Log log = new DefaultLog();
-//
-//        RemoteAVMNode remoteAVMNode = new RemoteAVMNode(nodeUrl, log);
-//        String latestBlock = remoteAVMNode.getLatestBlock();
+        boolean requestFromWeb = false;
+        if(origin != null && (origin.contains("bloxbean.com")
+                || origin.contains("localhost:8081"))) {
+            requestFromWeb = true;
+        }
 
-        return redisService.getChallenge(clientIp);
+        return redisService.getChallenge(clientIp, requestFromWeb);
     }
 
-    @PostMapping(value = "/register", consumes = "text/plain")
+    @PostMapping(value = "/register", consumes = MediaType.TEXT_PLAIN_VALUE)
     public TopupResult register(@RequestBody String hashcash) {
         String account = null;
         String network = null;
