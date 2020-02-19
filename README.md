@@ -5,5 +5,5 @@
 ```
 ./mvnw install dockerfile:build
 
-docker push bloxbean/aion-faucet-web:0.0.7
+docker push bloxbean/aion-faucet-web:0.0.8
 ```

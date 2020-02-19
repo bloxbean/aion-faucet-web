@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.bloxbean</groupId>
     <artifactId>aion-faucet-web</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.8</version>
     <name>aion-faucet-web</name>
     <description>Aion Faucet web component</description>
 

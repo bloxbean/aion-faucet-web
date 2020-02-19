@@ -106,7 +106,7 @@ public class RedisService {
 
             }
 
-            int reminder = (int) value / 3; //Every 3 requests within a hour will increase difficulty
+            int reminder = (int) value / 3; //Every 3 requests within six hour will increase difficulty
             challenge = challenge + (reminder * 2);
 
             //Update
@@ -119,7 +119,7 @@ public class RedisService {
                 public List<Object> execute(RedisOperations operations) throws DataAccessException {
                     operations.multi();
                     operations.opsForValue().increment(key, 1);
-                    operations.expire(key, 1, TimeUnit.HOURS);
+                    operations.expire(key, 6, TimeUnit.HOURS);
 
                     return operations.exec();
                 }
